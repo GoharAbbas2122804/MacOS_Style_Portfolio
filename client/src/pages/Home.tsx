@@ -1,24 +1,26 @@
 import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Monitor, Compass, Terminal as TerminalIcon, Mail as MailIcon, Trash2 } from "lucide-react";
-import { Dock } from "@/components/MacOS/Dock";
+import { Monitor, Compass, Terminal as TerminalIcon, Mail as MailIcon } from "lucide-react";
+import NewDock from "@/components/Dock";
 import { MenuBar } from "@/components/MacOS/MenuBar";
 import { Window } from "@/components/MacOS/Window";
 import { Finder } from "@/components/Apps/Finder";
 import { Terminal } from "@/components/Apps/Terminal";
 import { Safari } from "@/components/Apps/Safari";
 import { Mail } from "@/components/Apps/Mail";
+import Wallpaper from "@/components/Wallpaper";
+import ResponsiveContainer from "@/components/ResponsiveContainer";
 
 export default function Home() {
   const [booting, setBooting] = useState(true);
   const [progress, setProgress] = useState(0);
-  const [activeWindow, setActiveWindow] = useState("finder");
-  
+  const [activeWindow, setActiveWindow] = useState("about");
+
   const [windows, setWindows] = useState({
-    finder: { isOpen: true, zIndex: 1, title: "Finder", icon: <Monitor className="w-4 h-4 text-blue-500" /> },
-    safari: { isOpen: false, zIndex: 2, title: "Safari", icon: <Compass className="w-4 h-4 text-blue-500" /> },
-    terminal: { isOpen: false, zIndex: 3, title: "Terminal - gohar@macbook", icon: <TerminalIcon className="w-4 h-4 text-gray-500" /> },
-    mail: { isOpen: false, zIndex: 4, title: "Mail", icon: <MailIcon className="w-4 h-4 text-blue-500" /> }
+    about: { isOpen: true, zIndex: 1, title: "About Me", icon: <Monitor className="w-4 h-4 text-blue-500" /> },
+    projects: { isOpen: false, zIndex: 2, title: "Projects", icon: <Compass className="w-4 h-4 text-blue-500" /> },
+    skills: { isOpen: false, zIndex: 3, title: "Skills", icon: <TerminalIcon className="w-4 h-4 text-gray-500" /> },
+    contact: { isOpen: false, zIndex: 4, title: "Contact", icon: <MailIcon className="w-4 h-4 text-blue-500" /> }
   });
 
   // Boot sequence
@@ -54,6 +56,15 @@ export default function Home() {
     }));
   };
 
+  const handleNavItemClick = (id: string) => {
+    if (id === "hero") {
+      // Close all windows or go to about
+      focusWindow("about");
+    } else if (windows[id as keyof typeof windows]) {
+      focusWindow(id);
+    }
+  };
+
   if (booting) {
     return (
       <div className="h-screen w-screen bg-black flex flex-col items-center justify-center text-white">
@@ -70,78 +81,78 @@ export default function Home() {
   }
 
   return (
-    <div className="h-screen w-screen overflow-hidden bg-center bg-cover relative font-sans"
-         style={{ backgroundImage: `url('https://pixabay.com/get/g24074ffb837e2e26fb541a103676fc47f07096f52eabf56663b0d072feda757ca3fdab8cf1700e035a85aa8fb45cab9939b9c55335b2dea521ea5086cf5a03d0_1280.jpg')` }}>
-      
+    <ResponsiveContainer activeId={activeWindow} onNavItemClick={handleNavItemClick}>
+      <Wallpaper />
+
       {/* Background Dimmer overlay for boot effect */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 1 }}
         animate={{ opacity: 0 }}
         transition={{ duration: 1 }}
         className="absolute inset-0 bg-black pointer-events-none z-[999]"
       />
 
-      <MenuBar appName={activeWindow === 'finder' ? 'Finder' : windows[activeWindow as keyof typeof windows].title} />
+      <MenuBar appName={activeWindow === 'about' ? 'Finder' : windows[activeWindow as keyof typeof windows]?.title} />
 
       {/* Windows Area */}
       <div className="absolute inset-0 pt-8 pb-24 z-10 pointer-events-none">
         {/* Pointer events auto for window content */}
         <div className="w-full h-full relative pointer-events-auto">
-          
+
           <Window
-            id="finder"
+            id="about"
             title="Gohar Abbas"
             icon={<UserIcon />}
-            isOpen={windows.finder.isOpen}
-            onClose={() => closeWindow("finder")}
-            onMinimize={() => closeWindow("finder")}
-            onFocus={() => focusWindow("finder")}
-            zIndex={windows.finder.zIndex}
+            isOpen={windows.about.isOpen}
+            onClose={() => closeWindow("about")}
+            onMinimize={() => closeWindow("about")}
+            onFocus={() => focusWindow("about")}
+            zIndex={windows.about.zIndex}
           >
             <Finder />
           </Window>
 
           <Window
-            id="safari"
+            id="projects"
             title="Safari"
             width="w-[90%] md:w-[1000px]"
             height="h-[80%]"
             icon={<Compass className="w-4 h-4 text-gray-400" />}
-            isOpen={windows.safari.isOpen}
-            onClose={() => closeWindow("safari")}
-            onMinimize={() => closeWindow("safari")}
-            onFocus={() => focusWindow("safari")}
-            zIndex={windows.safari.zIndex}
+            isOpen={windows.projects.isOpen}
+            onClose={() => closeWindow("projects")}
+            onMinimize={() => closeWindow("projects")}
+            onFocus={() => focusWindow("projects")}
+            zIndex={windows.projects.zIndex}
           >
             <Safari />
           </Window>
 
           <Window
-            id="terminal"
+            id="skills"
             title="Terminal — -zsh"
             width="w-[600px]"
             height="h-[400px]"
             icon={<TerminalIcon className="w-4 h-4 text-gray-400" />}
-            isOpen={windows.terminal.isOpen}
-            onClose={() => closeWindow("terminal")}
-            onMinimize={() => closeWindow("terminal")}
-            onFocus={() => focusWindow("terminal")}
-            zIndex={windows.terminal.zIndex}
+            isOpen={windows.skills.isOpen}
+            onClose={() => closeWindow("skills")}
+            onMinimize={() => closeWindow("skills")}
+            onFocus={() => focusWindow("skills")}
+            zIndex={windows.skills.zIndex}
           >
             <Terminal />
           </Window>
 
           <Window
-            id="mail"
+            id="contact"
             title="Mail"
             width="w-[800px]"
             height="h-[600px]"
             icon={<MailIcon className="w-4 h-4 text-gray-400" />}
-            isOpen={windows.mail.isOpen}
-            onClose={() => closeWindow("mail")}
-            onMinimize={() => closeWindow("mail")}
-            onFocus={() => focusWindow("mail")}
-            zIndex={windows.mail.zIndex}
+            isOpen={windows.contact.isOpen}
+            onClose={() => closeWindow("contact")}
+            onMinimize={() => closeWindow("contact")}
+            onFocus={() => focusWindow("contact")}
+            zIndex={windows.contact.zIndex}
           >
             <Mail />
           </Window>
@@ -149,44 +160,10 @@ export default function Home() {
         </div>
       </div>
 
-      <Dock items={[
-        { 
-          id: "finder", 
-          label: "About Me", 
-          icon: <Monitor className="w-8 h-8 text-blue-300" />, 
-          isOpen: windows.finder.isOpen, 
-          onClick: () => focusWindow("finder") 
-        },
-        { 
-          id: "safari", 
-          label: "Projects", 
-          icon: <Compass className="w-8 h-8 text-blue-500" />, 
-          isOpen: windows.safari.isOpen, 
-          onClick: () => focusWindow("safari") 
-        },
-        { 
-          id: "terminal", 
-          label: "Skills", 
-          icon: <TerminalIcon className="w-8 h-8 text-gray-300" />, 
-          isOpen: windows.terminal.isOpen, 
-          onClick: () => focusWindow("terminal") 
-        },
-        { 
-          id: "mail", 
-          label: "Contact", 
-          icon: <MailIcon className="w-8 h-8 text-blue-400" />, 
-          isOpen: windows.mail.isOpen, 
-          onClick: () => focusWindow("mail") 
-        },
-        { 
-          id: "trash", 
-          label: "Trash", 
-          icon: <Trash2 className="w-8 h-8 text-gray-400" />, 
-          isOpen: false, 
-          onClick: () => {} 
-        },
-      ]} />
-    </div>
+      <div className="hidden md:block">
+        <NewDock activeId={activeWindow} onNavItemClick={handleNavItemClick} />
+      </div>
+    </ResponsiveContainer>
   );
 }
 

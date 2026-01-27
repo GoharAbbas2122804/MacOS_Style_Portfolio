@@ -10,70 +10,94 @@
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --font-mono: 'SF Mono', 'Fira Code', 'Roboto Mono', monospace;
 
-  /* macOS Monterey / Sonoma Palette */
-  --background: 240 10% 3.9%;
-  --foreground: 0 0% 98%;
+  /* MacTahoe Palette */
+  --tahoe-cobalt: #0A2540;
+  --tahoe-cerulean: #00BFFF;
+  --tahoe-glass: rgba(10, 37, 64, 0.3);
+  --tahoe-text: #F5F5F5;
 
-  --card: 240 10% 3.9%;
-  --card-foreground: 0 0% 98%;
- 
-  --popover: 240 10% 3.9%;
-  --popover-foreground: 0 0% 98%;
- 
-  --primary: 210 100% 50%; /* Apple Blue */
+  --background: 220 75% 15%;
+  /* #0A2540 approximation */
+  --foreground: 0 0% 96%;
+
+  --card: 220 75% 10%;
+  --card-foreground: 0 0% 96%;
+
+  --popover: 220 75% 10%;
+  --popover-foreground: 0 0% 96%;
+
+  --primary: 197 100% 50%;
+  /* #00BFFF */
   --primary-foreground: 0 0% 100%;
- 
-  --secondary: 240 3.7% 15.9%;
-  --secondary-foreground: 0 0% 98%;
- 
-  --muted: 240 3.7% 15.9%;
-  --muted-foreground: 240 5% 64.9%;
- 
-  --accent: 240 3.7% 15.9%;
-  --accent-foreground: 0 0% 98%;
- 
-  --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 0 0% 98%;
- 
-  --border: 240 3.7% 15.9%;
-  --input: 240 3.7% 15.9%;
-  --ring: 240 4.9% 83.9%;
 
-  /* Custom macOS Colors */
-  --mac-red: 350 89% 60%;
-  --mac-yellow: 45 95% 60%;
-  --mac-green: 100 85% 55%;
-  --mac-gray: 0 0% 90%;
-  --dock-bg: 0 0% 100% / 0.2;
-  --menu-bg: 0 0% 100% / 0.3;
+  --secondary: 220 75% 20%;
+  --secondary-foreground: 0 0% 96%;
+
+  --border: 220 75% 30%;
+  --radius: 1.5rem;
+  /* 24px */
 }
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-white/10;
   }
+
   body {
-    @apply bg-background text-foreground;
+    @apply bg-[#0A2540] text-[#F5F5F5] selection:bg-[#00BFFF]/30;
     font-family: var(--font-body);
-    overflow: hidden; /* Prevent scrolling on the desktop */
+    overflow-x: hidden;
+    scroll-behavior: smooth;
   }
 }
 
-/* Utilities for Glassmorphism */
 @layer utilities {
   .glass {
-    @apply backdrop-blur-xl bg-white/10 border border-white/20 shadow-xl;
+    @apply backdrop-blur-[20px] bg-white/10 border border-white/20 shadow-2xl;
   }
+
   .glass-dark {
-    @apply backdrop-blur-xl bg-black/40 border border-white/10 shadow-xl;
+    @apply backdrop-blur-[20px] bg-black/40 border border-white/10 shadow-2xl;
   }
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
+
+  .glass-tahoe {
+    @apply backdrop-blur-[20px] bg-[rgba(10, 37, 64, 0.3)] border border-white/10 shadow-2xl;
   }
-  .no-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+
+  /* macOS Scrollbars */
+  ::-webkit-scrollbar {
+    width: 8px;
   }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+    background-clip: content-box;
+  }
+}
+
+/* Snap Points */
+.snap-y-container {
+  scroll-snap-type: y mandatory;
+}
+
+.snap-y-section {
+  scroll-snap-align: start;
+}
+
+/* Typography Gradient */
+.text-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-br from-[#F5F5F5] to-[#E5E5E5];
 }
 
 /* Boot Screen Animation */
@@ -90,14 +114,4 @@
   background: white;
   width: 0%;
   transition: width 3s ease-in-out;
-}
-
-/* Terminal Cursor */
-.cursor-blink {
-  animation: blink 1s step-end infinite;
-}
-
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
 }

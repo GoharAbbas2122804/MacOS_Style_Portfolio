@@ -11,30 +11,29 @@ export function MenuBar({ appName = "Finder" }: { appName?: string }) {
   }, []);
 
   return (
-    <div className="fixed top-0 left-0 right-0 h-8 bg-black/20 backdrop-blur-md border-b border-white/5 flex items-center justify-between px-4 z-[100] text-xs font-medium text-white shadow-sm select-none">
+    <div className="fixed top-0 left-0 right-0 h-8 bg-black/20 backdrop-blur-[20px] border-b border-white/5 flex items-center justify-between px-4 z-[100] text-xs font-medium text-white shadow-sm select-none">
       <div className="flex items-center gap-4">
-        <div className="hover:bg-white/10 px-2 py-1 rounded cursor-pointer transition-colors">
+        <div className="hover:bg-white/10 px-2 py-1 rounded-md cursor-pointer transition-colors">
           <Apple className="w-4 h-4 fill-current" />
         </div>
-        <span className="font-bold cursor-default">{appName}</span>
+        <span className="font-bold cursor-default tracking-wide">{appName}</span>
         <div className="hidden md:flex gap-4 font-normal text-white/90">
-          <span className="hover:bg-white/10 px-2 py-1 rounded cursor-pointer transition-colors">File</span>
-          <span className="hover:bg-white/10 px-2 py-1 rounded cursor-pointer transition-colors">Edit</span>
-          <span className="hover:bg-white/10 px-2 py-1 rounded cursor-pointer transition-colors">View</span>
-          <span className="hover:bg-white/10 px-2 py-1 rounded cursor-pointer transition-colors">Go</span>
-          <span className="hover:bg-white/10 px-2 py-1 rounded cursor-pointer transition-colors">Window</span>
-          <span className="hover:bg-white/10 px-2 py-1 rounded cursor-pointer transition-colors">Help</span>
+          {["File", "Edit", "View", "Go", "Window", "Help"].map((item) => (
+            <span key={item} className="hover:bg-white/10 px-2 py-1 rounded-md cursor-pointer transition-colors">
+              {item}
+            </span>
+          ))}
         </div>
       </div>
 
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-3 px-2">
-          <Battery className="w-4 h-4 rotate-90" />
-          <Wifi className="w-4 h-4" />
-          <Search className="w-4 h-4" />
-          <Volume2 className="w-4 h-4" />
+          <Battery className="w-4 h-4 rotate-90 opacity-80" />
+          <Wifi className="w-4 h-4 opacity-80" />
+          <Search className="w-4 h-4 opacity-80" />
+          <Volume2 className="w-4 h-4 opacity-80" />
         </div>
-        <div className="hover:bg-white/10 px-2 py-1 rounded cursor-pointer transition-colors">
+        <div className="hover:bg-white/10 px-2 py-1 rounded-md cursor-pointer transition-colors tabular-nums">
           {format(time, "EEE MMM d h:mm aa")}
         </div>
       </div>
