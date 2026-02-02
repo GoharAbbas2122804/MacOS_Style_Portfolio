@@ -1,28 +1,120 @@
-import { useState, useEffect } from "react";
+/**
+ * Home Page - macOS-style Portfolio
+ * 
+ * Main page with WindowManager integration using Zustand state.
+ */
+
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Monitor, Compass, Terminal as TerminalIcon, Mail as MailIcon } from "lucide-react";
 import MacTahoeDock from "@/components/MacTahoeDock";
 import { MenuBar } from "@/components/MacOS/MenuBar";
-import { Window } from "@/components/MacOS/Window";
+import { WindowManager, Window } from "@/components/WindowManager";
 import { Finder } from "@/components/Apps/Finder";
 import { Terminal } from "@/components/Apps/Terminal";
 import { Safari } from "@/components/Apps/Safari";
 import { Mail } from "@/components/Apps/Mail";
 import Wallpaper from "@/components/Wallpaper";
 import ResponsiveContainer from "@/components/ResponsiveContainer";
+import { useWindowStore } from "@/stores/windowStore";
+import { WindowConfig, DEFAULT_INITIAL_SIZE, DEFAULT_MIN_SIZE } from "@/stores/windowTypes";
+import { useShallow } from 'zustand/react/shallow';
+
+/**
+ * User Icon Component
+ */
+function UserIcon() {
+  return (
+    <div className="w-4 h-4 bg-gradient-to-tr from-blue-400 to-blue-600 rounded-full flex items-center justify-center">
+      <span className="text-[8px] font-bold text-white">GA</span>
+    </div>
+  );
+}
+
+/**
+ * Window configurations
+ */
+const WINDOW_CONFIGS: WindowConfig[] = [
+  {
+    id: "finder",
+    title: "Finder",
+    icon: <Monitor className="w-4 h-4 text-blue-500" />,
+    component: Finder,
+    position: { x: 100, y: 80 },
+    size: { width: 800, height: 600 },
+    minSize: { width: 400, height: 300 },
+  },
+  {
+    id: "about",
+    title: "Gohar Abbas",
+    icon: <UserIcon />,
+    component: () => (
+      <div className="p-8">
+        <h1 className="text-3xl font-bold mb-4">About Me</h1>
+        <p className="text-lg opacity-80">Welcome to my macOS-style portfolio.</p>
+      </div>
+    ),
+    position: { x: 150, y: 120 },
+    size: { width: 600, height: 400 },
+    minSize: { width: 400, height: 300 },
+  },
+  {
+    id: "projects",
+    title: "Safari",
+    icon: <Compass className="w-4 h-4 text-gray-400" />,
+    component: Safari,
+    position: { x: 200, y: 100 },
+    size: { width: 1000, height: 700 },
+    minSize: { width: 600, height: 400 },
+  },
+  {
+    id: "skills",
+    title: "Terminal — -zsh",
+    icon: <TerminalIcon className="w-4 h-4 text-gray-400" />,
+    component: Terminal,
+    position: { x: 250, y: 150 },
+    size: { width: 600, height: 400 },
+    minSize: { width: 400, height: 250 },
+  },
+  {
+    id: "contact",
+    title: "Mail",
+    icon: <MailIcon className="w-4 h-4 text-gray-400" />,
+    component: Mail,
+    position: { x: 300, y: 130 },
+    size: { width: 800, height: 600 },
+    minSize: { width: 500, height: 400 },
+  },
+];
 
 export default function Home() {
   const [booting, setBooting] = useState(true);
   const [progress, setProgress] = useState(0);
-  const [activeWindow, setActiveWindow] = useState("about");
 
-  const [windows, setWindows] = useState({
-    finder: { isOpen: true, zIndex: 1, title: "Finder", icon: <Monitor className="w-4 h-4 text-blue-500" /> },
-    about: { isOpen: false, zIndex: 2, title: "About Me", icon: <UserIcon /> },
-    projects: { isOpen: false, zIndex: 3, title: "Projects", icon: <Compass className="w-4 h-4 text-blue-500" /> },
-    skills: { isOpen: false, zIndex: 4, title: "Skills", icon: <TerminalIcon className="w-4 h-4 text-gray-500" /> },
-    contact: { isOpen: false, zIndex: 5, title: "Contact", icon: <MailIcon className="w-4 h-4 text-blue-500" /> }
-  });
+  // Zustand store hooks - use useShallow to prevent infinite re-renders
+  const { addWindow, restoreWindow, bringToFront, windows, focusedWindowId } = useWindowStore(
+    useShallow((state) => ({
+      addWindow: state.addWindow,
+      restoreWindow: state.restoreWindow,
+      bringToFront: state.bringToFront,
+      windows: state.windows,
+      focusedWindowId: state.focusedWindowId,
+    }))
+  );
+
+  // Memoize derived values
+  const focusedWindow = useMemo(() =>
+    windows.find(w => w.id === focusedWindowId),
+    [windows, focusedWindowId]
+  );
+
+  const minimizedWindows = useMemo(() =>
+    windows.filter(w => w.isMinimized).map(w => ({ id: w.id, title: w.title, icon: w.icon })),
+    [windows]
+  );
+
+  // Get active window ID for dock and menu bar
+  const activeWindowId = focusedWindow?.id || 'finder';
 
   // Boot sequence
   useEffect(() => {
@@ -39,32 +131,46 @@ export default function Home() {
     return () => clearInterval(timer);
   }, []);
 
-  const focusWindow = (key: string) => {
-    setWindows(prev => {
-      const maxZ = Math.max(...Object.values(prev).map(w => w.zIndex));
-      return {
-        ...prev,
-        [key]: { ...prev[key as keyof typeof prev], isOpen: true, zIndex: maxZ + 1 }
-      };
-    });
-    setActiveWindow(key);
-  };
+  // Initialize windows after boot
+  useEffect(() => {
+    if (!booting && windows.length === 0) {
+      // Open Finder as the initial window
+      addWindow(WINDOW_CONFIGS[0]);
+    }
+  }, [booting, windows.length, addWindow]);
 
-  const closeWindow = (key: string) => {
-    setWindows(prev => ({
-      ...prev,
-      [key]: { ...prev[key as keyof typeof prev], isOpen: false }
-    }));
-  };
-
+  /**
+   * Handle navigation item click from dock
+   */
   const handleNavItemClick = (id: string) => {
-    if (id === "portfolio" || id === "hero" || id === "finder") {
-      focusWindow("finder");
-    } else if (windows[id as keyof typeof windows]) {
-      focusWindow(id);
+    const config = WINDOW_CONFIGS.find(w => w.id === id);
+    if (!config) return;
+
+    // Check if window exists
+    const existingWindow = windows.find(w => w.id === id);
+
+    if (existingWindow) {
+      if (existingWindow.isMinimized) {
+        restoreWindow(id);
+      } else {
+        bringToFront(id);
+      }
+    } else {
+      // Open new window
+      addWindow(config);
     }
   };
 
+  /**
+   * Get app name for menu bar
+   */
+  const getAppName = () => {
+    if (!focusedWindow) return 'Finder';
+    const config = WINDOW_CONFIGS.find(w => w.id === focusedWindow.id);
+    return config?.title || 'Finder';
+  };
+
+  // Boot screen
   if (booting) {
     return (
       <div className="h-screen w-screen bg-black flex flex-col items-center justify-center text-white">
@@ -81,7 +187,7 @@ export default function Home() {
   }
 
   return (
-    <ResponsiveContainer activeId={activeWindow} onNavItemClick={handleNavItemClick}>
+    <ResponsiveContainer activeId={activeWindowId} onNavItemClick={handleNavItemClick}>
       <Wallpaper />
 
       {/* Background Dimmer overlay for boot effect */}
@@ -92,99 +198,16 @@ export default function Home() {
         className="absolute inset-0 bg-black pointer-events-none z-[999]"
       />
 
-      <MenuBar appName={activeWindow === 'finder' || !activeWindow ? 'Finder' : windows[activeWindow as keyof typeof windows]?.title} />
+      <MenuBar appName={getAppName()} />
 
-      {/* Windows Area */}
-      <div className="absolute inset-0 pt-8 pb-24 z-10 pointer-events-none">
-        {/* Pointer events auto for window content */}
-        <div className="w-full h-full relative pointer-events-auto">
+      {/* Window Manager */}
+      <WindowManager />
 
-          <Window
-            id="finder"
-            title="Finder"
-            icon={<Monitor className="w-4 h-4 text-blue-500" />}
-            isOpen={windows.finder.isOpen}
-            onClose={() => closeWindow("finder")}
-            onMinimize={() => closeWindow("finder")}
-            onFocus={() => focusWindow("finder")}
-            zIndex={windows.finder.zIndex}
-          >
-            <Finder />
-          </Window>
-
-          <Window
-            id="about"
-            title="Gohar Abbas"
-            icon={<UserIcon />}
-            isOpen={windows.about.isOpen}
-            onClose={() => closeWindow("about")}
-            onMinimize={() => closeWindow("about")}
-            onFocus={() => focusWindow("about")}
-            zIndex={windows.about.zIndex}
-          >
-            <div className="p-8">
-              <h1 className="text-3xl font-bold mb-4">About Me</h1>
-              <p className="text-lg opacity-80">Welcome to my macOS-style portfolio.</p>
-            </div>
-          </Window>
-
-          <Window
-            id="projects"
-            title="Safari"
-            width="w-[90%] md:w-[1000px]"
-            height="h-[80%]"
-            icon={<Compass className="w-4 h-4 text-gray-400" />}
-            isOpen={windows.projects.isOpen}
-            onClose={() => closeWindow("projects")}
-            onMinimize={() => closeWindow("projects")}
-            onFocus={() => focusWindow("projects")}
-            zIndex={windows.projects.zIndex}
-          >
-            <Safari />
-          </Window>
-
-          <Window
-            id="skills"
-            title="Terminal — -zsh"
-            width="w-[600px]"
-            height="h-[400px]"
-            icon={<TerminalIcon className="w-4 h-4 text-gray-400" />}
-            isOpen={windows.skills.isOpen}
-            onClose={() => closeWindow("skills")}
-            onMinimize={() => closeWindow("skills")}
-            onFocus={() => focusWindow("skills")}
-            zIndex={windows.skills.zIndex}
-          >
-            <Terminal />
-          </Window>
-
-          <Window
-            id="contact"
-            title="Mail"
-            width="w-[800px]"
-            height="h-[600px]"
-            icon={<MailIcon className="w-4 h-4 text-gray-400" />}
-            isOpen={windows.contact.isOpen}
-            onClose={() => closeWindow("contact")}
-            onMinimize={() => closeWindow("contact")}
-            onFocus={() => focusWindow("contact")}
-            zIndex={windows.contact.zIndex}
-          >
-            <Mail />
-          </Window>
-
-        </div>
-      </div>
-
-      <MacTahoeDock activeId={activeWindow} onNavItemClick={handleNavItemClick} />
+      <MacTahoeDock
+        activeId={activeWindowId}
+        onNavItemClick={handleNavItemClick}
+        minimizedWindows={minimizedWindows}
+      />
     </ResponsiveContainer>
-  );
-}
-
-function UserIcon() {
-  return (
-    <div className="w-4 h-4 bg-gradient-to-tr from-blue-400 to-blue-600 rounded-full flex items-center justify-center">
-      <span className="text-[8px] font-bold text-white">GA</span>
-    </div>
   );
 }
