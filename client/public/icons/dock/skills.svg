@@ -1,0 +1,24 @@
+<svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="skillsGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1C1C1E"/>
+      <stop offset="100%" stop-color="#2C2C2E"/>
+    </linearGradient>
+  </defs>
+  <!-- Terminal window container -->
+  <rect x="4" y="4" width="48" height="48" rx="12" fill="url(#skillsGrad)"/>
+  <!-- Title bar -->
+  <rect x="4" y="4" width="48" height="12" rx="12" fill="#3A3A3C"/>
+  <rect x="4" y="12" width="48" height="4" fill="#3A3A3C"/>
+  <!-- Traffic lights -->
+  <circle cx="14" cy="10" r="3" fill="#FF5F56"/>
+  <circle cx="24" cy="10" r="3" fill="#FFBD2E"/>
+  <circle cx="34" cy="10" r="3" fill="#27CA40"/>
+  <!-- Terminal prompt -->
+  <text x="12" y="28" font-family="monospace" font-size="10" fill="#32D74B">$</text>
+  <rect x="20" y="22" width="28" height="2" rx="1" fill="#32D74B" opacity="0.8"/>
+  <!-- Code lines -->
+  <rect x="12" y="32" width="20" height="2" rx="1" fill="#5AC8FA" opacity="0.7"/>
+  <rect x="12" y="38" width="32" height="2" rx="1" fill="#FF9F0A" opacity="0.7"/>
+  <rect x="12" y="44" width="16" height="2" rx="1" fill="#BF5AF2" opacity="0.7"/>
+</svg>

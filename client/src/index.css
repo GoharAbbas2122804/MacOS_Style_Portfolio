@@ -115,3 +115,52 @@
   width: 0%;
   transition: width 3s ease-in-out;
 }
+
+/* Dock Animations */
+@keyframes dock-pulse {
+
+  0%,
+  100% {
+    opacity: 0.6;
+    box-shadow: 0 0 4px rgba(0, 191, 255, 0.6);
+  }
+
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 8px rgba(0, 191, 255, 0.8);
+  }
+}
+
+@keyframes dock-glow {
+
+  0%,
+  100% {
+    filter: drop-shadow(0 0 8px rgba(0, 191, 255, 0.3));
+  }
+
+  50% {
+    filter: drop-shadow(0 0 16px rgba(0, 191, 255, 0.5));
+  }
+}
+
+/* Dock icon utility classes */
+.dock-icon-tahoe {
+  filter: hue-rotate(220deg) saturate(1.2);
+}
+
+.dock-active-indicator {
+  animation: dock-pulse 2s ease-in-out infinite;
+}
+
+.dock-icon-glow:hover {
+  animation: dock-glow 1.5s ease-in-out infinite;
+}
+
+/* Glass effect for dock */
+.glass-dock {
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  background: rgba(10, 37, 64, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}

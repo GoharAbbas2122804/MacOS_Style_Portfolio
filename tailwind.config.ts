@@ -9,8 +9,16 @@ export default {
         lg: ".5625rem", /* 9px */
         md: ".375rem", /* 6px */
         sm: ".1875rem", /* 3px */
+        dock: "18px", /* macOS Tahoe dock radius */
       },
       colors: {
+        // MacTahoe Palette
+        tahoe: {
+          cobalt: "#0A2540",
+          cerulean: "#00BFFF",
+          glass: "rgba(10, 37, 64, 0.4)",
+          text: "#F5F5F5",
+        },
         // Flat / base colors (regular buttons)
         background: "hsl(var(--background) / <alpha-value>)",
         foreground: "hsl(var(--foreground) / <alpha-value>)",

@@ -1,0 +1,12 @@
+<svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="personGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#5AC8FA"/>
+      <stop offset="100%" stop-color="#007AFF"/>
+    </linearGradient>
+  </defs>
+  <!-- Head -->
+  <circle cx="28" cy="18" r="10" fill="url(#personGrad)"/>
+  <!-- Body -->
+  <path d="M12 48C12 38.0589 19.1634 30 28 30C36.8366 30 44 38.0589 44 48H12Z" fill="url(#personGrad)"/>
+</svg>

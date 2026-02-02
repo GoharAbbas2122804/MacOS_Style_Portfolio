@@ -1,0 +1,14 @@
+<svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="linkedinGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0A66C2"/>
+      <stop offset="100%" stop-color="#004182"/>
+    </linearGradient>
+  </defs>
+  <!-- App container -->
+  <rect x="4" y="4" width="48" height="48" rx="12" fill="url(#linkedinGrad)"/>
+  <!-- LinkedIn "in" text -->
+  <path d="M16 24.5V40H21.5V24.5H16Z" fill="white"/>
+  <circle cx="18.75" cy="18" r="3.5" fill="white"/>
+  <path d="M25 24.5V40H30.5V31.5C30.5 29.5 31.5 28 33.5 28C35.5 28 36 29.5 36 31.5V40H41.5V30C41.5 25.5 39 23.5 35.5 23.5C32.5 23.5 31 25.25 30.5 26.5V24.5H25Z" fill="white"/>
+</svg>

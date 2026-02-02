@@ -1,0 +1,14 @@
+<svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="targetGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF6B6B"/>
+      <stop offset="100%" stop-color="#FF3B30"/>
+    </linearGradient>
+  </defs>
+  <!-- Outer ring -->
+  <circle cx="28" cy="28" r="22" stroke="url(#targetGrad)" stroke-width="4" fill="none"/>
+  <!-- Middle ring -->
+  <circle cx="28" cy="28" r="14" stroke="url(#targetGrad)" stroke-width="4" fill="none"/>
+  <!-- Center dot -->
+  <circle cx="28" cy="28" r="6" fill="url(#targetGrad)"/>
+</svg>

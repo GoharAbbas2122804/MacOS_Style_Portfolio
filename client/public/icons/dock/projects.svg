@@ -1,0 +1,20 @@
+<svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="projectsGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#5AC8FA"/>
+      <stop offset="100%" stop-color="#007AFF"/>
+    </linearGradient>
+    <linearGradient id="projectsFront" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#64D2FF"/>
+      <stop offset="100%" stop-color="#0A84FF"/>
+    </linearGradient>
+  </defs>
+  <!-- Folder back panel -->
+  <path d="M6 16C6 12.6863 8.68629 10 12 10H20.5858C21.4492 10 22.2775 10.3429 22.8891 10.9546L26 14H44C47.3137 14 50 16.6863 50 20V42C50 45.3137 47.3137 48 44 48H12C8.68629 48 6 45.3137 6 42V16Z" fill="url(#projectsGrad)"/>
+  <!-- Folder front panel with depth -->
+  <path d="M6 22C6 20.3431 7.34315 19 9 19H47C48.6569 19 50 20.3431 50 22V44C50 46.2091 48.2091 48 46 48H10C7.79086 48 6 46.2091 6 44V22Z" fill="url(#projectsFront)" opacity="0.85"/>
+  <!-- Code brackets badge -->
+  <circle cx="42" cy="40" r="10" fill="#0A2540"/>
+  <path d="M38 37L35 40L38 43" stroke="#5AC8FA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M46 37L49 40L46 43" stroke="#5AC8FA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

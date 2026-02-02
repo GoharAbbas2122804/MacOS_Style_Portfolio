@@ -1,0 +1,15 @@
+<svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="aboutGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#5E5CE6"/>
+      <stop offset="100%" stop-color="#BF5AF2"/>
+    </linearGradient>
+  </defs>
+  <!-- App container -->
+  <rect x="4" y="4" width="48" height="48" rx="12" fill="url(#aboutGrad)"/>
+  <!-- Profile silhouette -->
+  <circle cx="28" cy="22" r="8" fill="white" opacity="0.95"/>
+  <path d="M16 44C16 36.268 21.3726 30 28 30C34.6274 30 40 36.268 40 44" fill="white" opacity="0.95"/>
+  <!-- Subtle highlight -->
+  <rect x="4" y="4" width="48" height="24" rx="12" fill="white" opacity="0.1"/>
+</svg>

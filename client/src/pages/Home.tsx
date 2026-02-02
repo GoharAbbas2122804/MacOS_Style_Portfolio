@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Monitor, Compass, Terminal as TerminalIcon, Mail as MailIcon } from "lucide-react";
-import NewDock from "@/components/Dock";
+import MacTahoeDock from "@/components/MacTahoeDock";
 import { MenuBar } from "@/components/MacOS/MenuBar";
 import { Window } from "@/components/MacOS/Window";
 import { Finder } from "@/components/Apps/Finder";
@@ -17,10 +17,11 @@ export default function Home() {
   const [activeWindow, setActiveWindow] = useState("about");
 
   const [windows, setWindows] = useState({
-    about: { isOpen: true, zIndex: 1, title: "About Me", icon: <Monitor className="w-4 h-4 text-blue-500" /> },
-    projects: { isOpen: false, zIndex: 2, title: "Projects", icon: <Compass className="w-4 h-4 text-blue-500" /> },
-    skills: { isOpen: false, zIndex: 3, title: "Skills", icon: <TerminalIcon className="w-4 h-4 text-gray-500" /> },
-    contact: { isOpen: false, zIndex: 4, title: "Contact", icon: <MailIcon className="w-4 h-4 text-blue-500" /> }
+    finder: { isOpen: true, zIndex: 1, title: "Finder", icon: <Monitor className="w-4 h-4 text-blue-500" /> },
+    about: { isOpen: false, zIndex: 2, title: "About Me", icon: <UserIcon /> },
+    projects: { isOpen: false, zIndex: 3, title: "Projects", icon: <Compass className="w-4 h-4 text-blue-500" /> },
+    skills: { isOpen: false, zIndex: 4, title: "Skills", icon: <TerminalIcon className="w-4 h-4 text-gray-500" /> },
+    contact: { isOpen: false, zIndex: 5, title: "Contact", icon: <MailIcon className="w-4 h-4 text-blue-500" /> }
   });
 
   // Boot sequence
@@ -57,9 +58,8 @@ export default function Home() {
   };
 
   const handleNavItemClick = (id: string) => {
-    if (id === "hero") {
-      // Close all windows or go to about
-      focusWindow("about");
+    if (id === "portfolio" || id === "hero" || id === "finder") {
+      focusWindow("finder");
     } else if (windows[id as keyof typeof windows]) {
       focusWindow(id);
     }
@@ -92,12 +92,25 @@ export default function Home() {
         className="absolute inset-0 bg-black pointer-events-none z-[999]"
       />
 
-      <MenuBar appName={activeWindow === 'about' ? 'Finder' : windows[activeWindow as keyof typeof windows]?.title} />
+      <MenuBar appName={activeWindow === 'finder' || !activeWindow ? 'Finder' : windows[activeWindow as keyof typeof windows]?.title} />
 
       {/* Windows Area */}
       <div className="absolute inset-0 pt-8 pb-24 z-10 pointer-events-none">
         {/* Pointer events auto for window content */}
         <div className="w-full h-full relative pointer-events-auto">
+
+          <Window
+            id="finder"
+            title="Finder"
+            icon={<Monitor className="w-4 h-4 text-blue-500" />}
+            isOpen={windows.finder.isOpen}
+            onClose={() => closeWindow("finder")}
+            onMinimize={() => closeWindow("finder")}
+            onFocus={() => focusWindow("finder")}
+            zIndex={windows.finder.zIndex}
+          >
+            <Finder />
+          </Window>
 
           <Window
             id="about"
@@ -109,7 +122,10 @@ export default function Home() {
             onFocus={() => focusWindow("about")}
             zIndex={windows.about.zIndex}
           >
-            <Finder />
+            <div className="p-8">
+              <h1 className="text-3xl font-bold mb-4">About Me</h1>
+              <p className="text-lg opacity-80">Welcome to my macOS-style portfolio.</p>
+            </div>
           </Window>
 
           <Window
@@ -160,9 +176,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="hidden md:block">
-        <NewDock activeId={activeWindow} onNavItemClick={handleNavItemClick} />
-      </div>
+      <MacTahoeDock activeId={activeWindow} onNavItemClick={handleNavItemClick} />
     </ResponsiveContainer>
   );
 }
