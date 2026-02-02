@@ -162,14 +162,22 @@ function DockSeparator() {
     );
 }
 
+interface MinimizedWindow {
+    id: string;
+    title: string;
+    icon?: React.ReactNode;
+}
+
 interface MacTahoeDockProps {
     activeId?: string;
     onNavItemClick?: (id: string) => void;
+    minimizedWindows?: MinimizedWindow[];
 }
 
 export default function MacTahoeDock({
     activeId,
     onNavItemClick,
+    minimizedWindows = [],
 }: MacTahoeDockProps) {
     const mouseX = useMotionValue(Infinity);
 
