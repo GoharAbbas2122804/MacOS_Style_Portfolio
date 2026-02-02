@@ -25,8 +25,10 @@ const DOCK_ITEMS: DockItemConfig[] = [
     { id: "projects", label: "Projects", icon: "/icons/dock/projects.svg" },
     { id: "skills", label: "Skills", icon: "/icons/dock/skills.svg" },
     { id: "contact", label: "Contact", icon: "/icons/dock/contact.svg" },
-    { id: "github", label: "GitHub", icon: "/icons/dock/github.svg", url: "https://github.com" },
-    { id: "linkedin", label: "LinkedIn", icon: "/icons/dock/linkedin.svg", url: "https://linkedin.com" },
+    { id: "github", label: "GitHub", icon: "/icons/dock/github.svg", url: "https://github.com/GoharAbbas2122804" },
+    { id: "linkedin", label: "LinkedIn", icon: "/icons/dock/linkedin.svg", url: "https://www.linkedin.com/in/gohar-abbas-106519321/" },
+    { id: "reddit", label: "Reddit", icon: "/icons/dock/reddit.png", url: "https://www.reddit.com/user/GoharAbbasKhokhar/" },
+    { id: "upwork", label: "Upwork", icon: "/icons/dock/upwork.png", url: "https://www.upwork.com/freelancers/~01333d822dfed5da18" },
 ];
 
 // Separator index - items after this index are external links
