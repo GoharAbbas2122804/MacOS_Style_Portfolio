@@ -49,7 +49,7 @@ interface DockIconProps {
 }
 
 // Cosine-based magnification algorithm (Apple's approach)
-function useMagnification(mouseX: MotionValue<number>, ref: React.RefObject<HTMLDivElement>) {
+function useMagnification(mouseX: MotionValue<number>, ref: React.RefObject<HTMLDivElement | null>) {
     const baseSize = 56;
     const maxSize = 72;
     const magnificationRange = 150; // pixels from center where magnification occurs
