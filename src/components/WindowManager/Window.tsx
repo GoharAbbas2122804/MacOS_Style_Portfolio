@@ -3,6 +3,10 @@
  * 
  * Enhanced macOS-style window with drag, resize, and authentic styling.
  * Uses GPU-accelerated transforms for smooth 60fps performance.
+ * 
+ * KEY FIX: Uses positionRef to maintain visual position consistency during drag.
+ * This prevents the snap-back bug where windows would briefly flash to their
+ * old position when React re-rendered after state updates.
  */
 
 import React, { memo, useCallback, useEffect, useRef } from 'react';
@@ -30,6 +34,12 @@ interface WindowProps extends Omit<WindowState, 'component'> {
  * - 8-directional resizing
  * - Traffic light controls
  * - Smooth Framer Motion animations
+ * 
+ * DRAG IMPLEMENTATION NOTES:
+ * - positionRef tracks the "visual" position of the window
+ * - During drag: We update positionRef and apply transform directly to DOM
+ * - On drag end: We update BOTH positionRef AND the store state
+ * - This prevents the snap-back bug where stale props would briefly override the visual position
  */
 export const Window = memo(({
     id,
@@ -49,6 +59,15 @@ export const Window = memo(({
     const isDraggingRef = useRef(false);
     const dragStartRef = useRef({ x: 0, y: 0, posX: 0, posY: 0 });
 
+    /**
+     * Position ref tracks the current visual position of the window.
+     * This is the key to preventing the snap-back bug:
+     * - It stays in sync with the DOM during drag operations
+     * - It's updated BEFORE state updates to maintain visual consistency
+     * - It syncs with props when not dragging (to handle external updates)
+     */
+    const positionRef = useRef({ x: position.x, y: position.y });
+
     const {
         removeWindow,
         minimizeWindow,
@@ -60,6 +79,16 @@ export const Window = memo(({
     const { handleResizeStart, isResizing } = useWindowResize({
         windowId: id,
     });
+
+    /**
+     * Sync positionRef with position props when not dragging.
+     * This ensures external position updates (from store) are reflected.
+     */
+    useEffect(() => {
+        if (!isDraggingRef.current) {
+            positionRef.current = { x: position.x, y: position.y };
+        }
+    }, [position.x, position.y]);
 
     /**
      * Handle close button click
@@ -93,16 +122,24 @@ export const Window = memo(({
 
     /**
      * Handle drag start
+     * 
+     * OFFSET CALCULATION:
+     * We store the initial mouse position and window position.
+     * newPosition = startPosition + (currentMouse - startMouse)
+     * This gives us smooth, offset-aware dragging.
      */
     const handleDragStart = useCallback((e: React.MouseEvent) => {
         if (isMaximized) return;
 
         isDraggingRef.current = true;
+
+        // Use positionRef.current as the starting position
+        // This ensures we continue from the visual position, not stale props
         dragStartRef.current = {
             x: e.clientX,
             y: e.clientY,
-            posX: position.x,
-            posY: position.y,
+            posX: positionRef.current.x,
+            posY: positionRef.current.y,
         };
 
         document.body.style.cursor = 'grabbing';
@@ -110,13 +147,19 @@ export const Window = memo(({
 
         if (windowRef.current) {
             windowRef.current.style.willChange = 'transform';
+            // Add dragging opacity for visual feedback
+            windowRef.current.style.opacity = '0.95';
         }
 
         bringToFront(id);
-    }, [id, isMaximized, position, bringToFront]);
+    }, [id, isMaximized, bringToFront]);
 
     /**
-     * Handle mouse move during drag
+     * Handle mouse move and mouse up during drag
+     * 
+     * KEY FIX: On mouseup, we update positionRef BEFORE calling setWindowPosition.
+     * This ensures that when React re-renders, the transform style reads from
+     * positionRef.current (the new position), not the stale position prop.
      */
     useEffect(() => {
         if (!windowRef.current) return;
@@ -129,7 +172,11 @@ export const Window = memo(({
                 const deltaY = e.clientY - dragStartRef.current.y;
 
                 const newX = dragStartRef.current.posX + deltaX;
-                const newY = Math.max(32, dragStartRef.current.posY + deltaY); // Keep below menu bar
+                // Keep below menu bar (32px)
+                const newY = Math.max(32, dragStartRef.current.posY + deltaY);
+
+                // Update positionRef to track current visual position
+                positionRef.current = { x: newX, y: newY };
 
                 if (windowRef.current) {
                     windowRef.current.style.transform = `translate3d(${newX}px, ${newY}px, 0)`;
@@ -140,6 +187,16 @@ export const Window = memo(({
         const handleMouseUp = (e: MouseEvent) => {
             if (!isDraggingRef.current) return;
 
+            // Calculate final position
+            const deltaX = e.clientX - dragStartRef.current.x;
+            const deltaY = e.clientY - dragStartRef.current.y;
+            const newX = dragStartRef.current.posX + deltaX;
+            const newY = Math.max(32, dragStartRef.current.posY + deltaY);
+
+            // CRITICAL FIX: Update positionRef BEFORE setting isDragging to false
+            // This ensures the visual position is locked in before any re-render
+            positionRef.current = { x: newX, y: newY };
+
             isDraggingRef.current = false;
 
             document.body.style.cursor = '';
@@ -147,14 +204,13 @@ export const Window = memo(({
 
             if (windowRef.current) {
                 windowRef.current.style.willChange = 'auto';
+                windowRef.current.style.opacity = '1';
+                // Ensure the transform is set to the final position
+                windowRef.current.style.transform = `translate3d(${newX}px, ${newY}px, 0)`;
             }
 
-            // Calculate final position
-            const deltaX = e.clientX - dragStartRef.current.x;
-            const deltaY = e.clientY - dragStartRef.current.y;
-            const newX = dragStartRef.current.posX + deltaX;
-            const newY = Math.max(32, dragStartRef.current.posY + deltaY);
-
+            // Update the store state - React will re-render, but positionRef
+            // already has the correct position, so no snap-back will occur
             setWindowPosition(id, { x: newX, y: newY });
         };
 

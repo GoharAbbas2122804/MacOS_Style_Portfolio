@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Send, User, RotateCcw, PenSquare } from "lucide-react";
-import { insertMessageSchema, type InsertMessage } from "@shared/schema";
+import { contactFormSchema, type ContactFormData } from "@/lib/contact-schema";
 import { useContact } from "@/hooks/use-contact";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,8 +12,8 @@ export function Mail() {
   const { mutate, isPending } = useContact();
   const [activeFolder, setActiveFolder] = useState("inbox");
   
-  const form = useForm<InsertMessage>({
-    resolver: zodResolver(insertMessageSchema),
+  const form = useForm<ContactFormData>({
+    resolver: zodResolver(contactFormSchema),
     defaultValues: {
       name: "",
       email: "",
@@ -21,7 +21,7 @@ export function Mail() {
     }
   });
 
-  const onSubmit = (data: InsertMessage) => {
+  const onSubmit = (data: ContactFormData) => {
     mutate(data, {
       onSuccess: () => form.reset()
     });
